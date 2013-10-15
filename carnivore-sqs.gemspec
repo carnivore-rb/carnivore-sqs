@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.homepage = 'https://github.com/heavywater/carnivore-sqs'
   s.description = 'Carnivore SQS source'
   s.require_path = 'lib'
-  s.add_dependency 'carnivore'
+  s.add_dependency 'carnivore', '>= 0.1.8'
   s.add_dependency 'fog'
   s.files = Dir['**/*']
 end
