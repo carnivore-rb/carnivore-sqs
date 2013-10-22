@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.summary = 'Message processing helper'
   s.author = 'Chris Roberts'
   s.email = 'chrisroberts.code@gmail.com'
-  s.homepage = 'https://github.com/heavywater/carnivore-sqs'
+  s.homepage = 'https://github.com/carnivore-rb/carnivore-sqs'
   s.description = 'Carnivore SQS source'
   s.require_path = 'lib'
   s.add_dependency 'carnivore', '>= 0.1.8'

@@ -19,6 +19,6 @@ end.start!
 ```
 
 # Info
-* Carnivore: https://github.com/heavywater/carnivore
-* Repository: https://github.com/heavywater/carnivore-sqs
-* IRC: Freenode @ #heavywater
+* Carnivore: https://github.com/carnivore-rb/carnivore
+* Repository: https://github.com/carnivore-rb/carnivore-sqs
+* IRC: Freenode @ #carnivore
