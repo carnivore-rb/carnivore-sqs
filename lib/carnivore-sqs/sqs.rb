@@ -34,7 +34,15 @@ module Carnivore
       end
 
       def format_queue(q)
-        q.include?('.com') ? q : "/#{q.split(':')[-2,2].join('/')}"
+        unless(q.include?('.com'))
+          if((parts = q.split(':')).size > 1)
+            "/#{parts[-2,2].join('/')}"
+          else
+            q
+          end
+        else
+          q
+        end
       end
 
       def connect
