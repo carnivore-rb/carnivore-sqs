@@ -79,6 +79,7 @@ module Carnivore
 
       def transmit(message, original=nil)
         queue = determine_queue(original)
+        message = JSON.dump(message) unless message.is_a?(String)
         @fog.send_message(queue, message)
       end
 
@@ -86,7 +87,11 @@ module Carnivore
         queue = determine_queue(message)
         debug "Source<#{name}> Confirming message<#{message}> on Queue<#{queue}>"
         m = message.is_a?(Message) ? message[:message] : message
-        @fog.delete_message(queue, m['ReceiptHandle'])
+        if(m['ReceiptHandle'])
+          @fog.delete_message(queue, m['ReceiptHandle'])
+        else
+          debug "Message contained no receipt handle. Likely a looper #{message}"
+        end
       end
 
       private
