@@ -29,8 +29,8 @@ module Carnivore
         end
         @pause_time = args[:pause] || 5
         @receive_timeout = after(args[:receive_timeout] || 30){ terminate }
-        debug "Creating SQS source instance <#{name}>"
-        debug "Handled queues: #{@queues.inspect}"
+        debug "Setup for SQS source instance <#{name}> complete"
+        debug "Configured queues for handling: #{@queues.inspect}"
       end
 
       def format_queue(q)
@@ -47,6 +47,7 @@ module Carnivore
 
       def connect
         @fog = Fog::AWS::SQS.new(@connection_args)
+        debug "Connection for SQS source instance <#{name}> is now complete"
       end
 
       def receive(n=1)
