@@ -86,9 +86,16 @@ module Carnivore
       end
 
       def transmit(message, original=nil)
-        queue = determine_queue(original)
-        message = JSON.dump(message) unless message.is_a?(String)
-        @fog.send_message(queue, message)
+        begin
+          queue = determine_queue(original)
+          message = JSON.dump(message) unless message.is_a?(String)
+          @fog.send_message(queue, message)
+        rescue Excon::Errors::Error => e
+          error "SQS transmission received an unexpected error. Pausing and running retry (#{e.class}: #{e})"
+          debug "SQS ERROR TRACE: #{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+          sleep Carnivore::Config.get(:carnivore, :sqs, :retry_wait) || 5
+          retry
+        end
       end
 
       def confirm(message)
