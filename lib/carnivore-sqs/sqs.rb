@@ -28,7 +28,7 @@ module Carnivore
           @processable_queues = Array(args[:processable_queues]).flatten.compact
         end
         @pause_time = args[:pause] || 5
-        @receive_timeout = after(args[:receive_timeout] || 30){ terminate }
+        @receive_timeout = nil
         debug "Setup for SQS source instance <#{name}> complete"
         debug "Configured queues for handling: #{@queues.inspect}"
       end
@@ -51,6 +51,7 @@ module Carnivore
       end
 
       def receive(n=1)
+        set_receive_timeout!
         count = 0
         msgs = []
         while(msgs.empty?)
@@ -156,6 +157,10 @@ module Carnivore
           end
         end
         m
+      end
+
+      def set_receive_timeout!
+        @receive_timeout ||= after(args[:receive_timeout] || 30){ connect }
       end
 
     end
