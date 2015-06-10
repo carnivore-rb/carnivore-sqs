@@ -21,8 +21,8 @@ module Carnivore
               @queues.size.times.map(&:to_i).zip(@queues).flatten
           )]
         end
-        @queues.values.map do |q|
-          q.replace(format_queue(q))
+        @queues.values.map! do |q|
+          format_queue(q)
         end
         if(args[:processable_queues])
           @processable_queues = Array(args[:processable_queues]).flatten.compact
