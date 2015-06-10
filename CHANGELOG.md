@@ -1,3 +1,6 @@
+# v0.1.6
+* Fix: create new strings on queue name format
+
 # v0.1.4
 * Make remote queue connection more resistant to failures
 * Add better logging for connection setup and establishment
