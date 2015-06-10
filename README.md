@@ -10,7 +10,8 @@ require 'carnivore-sqs'
 
 Carnivore.configure do
   source = Carnivore::Source.build(
-    :type => {
+    :type => :sqs,
+    :args => {
       :fog => {...},
       :queues => ['arn:aws:sqs:...']
     }
