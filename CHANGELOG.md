@@ -1,3 +1,6 @@
+# v0.1.10
+* Fix: Loop messages for source queue merge
+
 # v0.1.8
 * Fix: Set source queue within read loop
 
