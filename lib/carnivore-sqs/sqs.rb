@@ -60,14 +60,12 @@ module Carnivore
           msgs = queues.map do |q|
             begin
               m = @fog.receive_message(q, 'MaxNumberOfMessages' => n).body['Message']
+              m.merge('SourceQueue' => q)
             rescue Excon::Errors::Error => e
               error "SQS received an unexpected error. Pausing and running retry (#{e.class}: #{e})"
               debug "SQS ERROR TRACE: #{e.class}: #{e}\n#{e.backtrace.join("\n")}"
               sleep Carnivore::Config.get(:carnivore, :sqs, :retry_wait) || 5
               retry
-            end
-            m.map! do |msg|
-              msg.merge('SourceQueue' => q)
             end
           end.flatten.compact
           @receive_timeout.reset
@@ -83,7 +81,7 @@ module Carnivore
           end
           count += 1
         end
-        msgs.map{|m| pre_process(m) }
+        msgs.flatten.compact.map{|m| pre_process(m) }
       end
 
       def transmit(message, original=nil)
