@@ -1,3 +1,6 @@
+# v0.1.8
+* Fix: Set source queue within read loop
+
 # v0.1.6
 * Fix: create new strings on queue name format
 
