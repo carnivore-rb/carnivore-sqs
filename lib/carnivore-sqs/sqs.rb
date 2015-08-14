@@ -97,6 +97,21 @@ module Carnivore
         end
       end
 
+      def touch(message)
+        begin
+          queue = determine_queue(message)
+          debug "Source<#{name}> Touching message<#{message}> on Queue<#{queue}>"
+          m = message.is_a?(Message) ? message[:message] : message
+          if(m['ReceiptHandle'])
+            @fog.change_message_visibility(queue, m['ReceiptHandle'], 30)
+          else
+            debug "Message contained no receipt handle. Likely a looper #{message}"
+          end
+        rescue => e
+          error "Failed to touch message to reset timeout! #{message} - #{e.class}: #{e}"
+        end
+      end
+
       def confirm(message)
         queue = determine_queue(message)
         debug "Source<#{name}> Confirming message<#{message}> on Queue<#{queue}>"
