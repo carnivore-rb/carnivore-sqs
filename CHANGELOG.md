@@ -1,3 +1,6 @@
+# v0.1.12
+* Feature: Add #touch support
+
 # v0.1.10
 * Fix: Loop messages for source queue merge
 
