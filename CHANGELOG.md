@@ -1,3 +1,6 @@
+# v0.1.16
+* Fix iteration type used for hash generation
+
 # v0.1.14
 * Fix storage of updated queue when format applied on setup
 
