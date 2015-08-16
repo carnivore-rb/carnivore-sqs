@@ -1,3 +1,6 @@
+# v0.1.14
+* Fix storage of updated queue when format applied on setup
+
 # v0.1.12
 * Feature: Add #touch support
 
