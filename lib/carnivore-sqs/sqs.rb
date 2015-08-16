@@ -22,7 +22,7 @@ module Carnivore
           )]
         end
         @queues = Hash[
-          @queues.each do |k,v|
+          @queues.map do |k,v|
             [k, format_queue(v)]
           end
         ]
