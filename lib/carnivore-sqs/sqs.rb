@@ -21,14 +21,15 @@ module Carnivore
               @queues.size.times.map(&:to_i).zip(@queues).flatten
           )]
         end
-        @queues.values.map! do |q|
-          format_queue(q)
-        end
+        @queues = Hash[
+          @queues.each do |k,v|
+            [k, format_queue(v)]
+          end
+        ]
         if(args[:processable_queues])
           @processable_queues = Array(args[:processable_queues]).flatten.compact
         end
         @pause_time = args[:pause] || 5
-        @receive_timeout = nil
         debug "Setup for SQS source instance <#{name}> complete"
         debug "Configured queues for handling: #{@queues.inspect}"
       end
@@ -51,16 +52,20 @@ module Carnivore
       end
 
       def receive(n=1)
-        set_receive_timeout!
         count = 0
         msgs = []
         while(msgs.empty?)
           msgs = []
-          @receive_timeout.reset
           msgs = queues.map do |q|
             begin
-              m = @fog.receive_message(q, 'MaxNumberOfMessages' => n).body['Message']
-              m.map{|mg| mg.merge('SourceQueue' => q)}
+              Timeout.timeout(args.fetch(:receive_timeout, 30).to_i) do
+                m = @fog.receive_message(q, 'MaxNumberOfMessages' => n).body['Message']
+                m.map{|mg| mg.merge('SourceQueue' => q)}
+              end
+            rescue Timeout::Error
+              error 'Receive timeout encountered. Triggering a reconnection.'
+              connect
+              retry
             rescue Excon::Errors::Error => e
               error "SQS received an unexpected error. Pausing and running retry (#{e.class}: #{e})"
               debug "SQS ERROR TRACE: #{e.class}: #{e}\n#{e.backtrace.join("\n")}"
@@ -68,7 +73,6 @@ module Carnivore
               retry
             end
           end.flatten.compact
-          @receive_timeout.reset
           if(msgs.empty?)
             if(count == 0)
               debug "Source<#{name}> no message received. Sleeping for #{pause_time} seconds."
@@ -170,10 +174,6 @@ module Carnivore
           end
         end
         m
-      end
-
-      def set_receive_timeout!
-        @receive_timeout ||= after(args[:receive_timeout] || 30){ connect }
       end
 
     end
