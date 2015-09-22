@@ -58,9 +58,11 @@ module Carnivore
           msgs = []
           msgs = queues.map do |q|
             begin
-              Timeout.timeout(args.fetch(:receive_timeout, 30).to_i) do
-                m = @fog.receive_message(q, 'MaxNumberOfMessages' => n).body['Message']
-                m.map{|mg| mg.merge('SourceQueue' => q)}
+              defer do
+                Timeout.timeout(args.fetch(:receive_timeout, 30).to_i) do
+                  m = @fog.receive_message(q, 'MaxNumberOfMessages' => n).body['Message']
+                  m.map{|mg| mg.merge('SourceQueue' => q)}
+                end
               end
             rescue Timeout::Error
               error 'Receive timeout encountered. Triggering a reconnection.'
@@ -92,7 +94,7 @@ module Carnivore
         begin
           queue = determine_queue(original)
           message = JSON.dump(message) unless message.is_a?(String)
-          @fog.send_message(queue, message)
+          defer{ @fog.send_message(queue, message) }
         rescue Excon::Errors::Error => e
           error "SQS transmission received an unexpected error. Pausing and running retry (#{e.class}: #{e})"
           debug "SQS ERROR TRACE: #{e.class}: #{e}\n#{e.backtrace.join("\n")}"
