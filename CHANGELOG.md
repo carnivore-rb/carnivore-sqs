@@ -1,3 +1,6 @@
+# v0.1.18
+* Defer on remote API calls to prevent internal blocking
+
 # v0.1.16
 * Fix iteration type used for hash generation
 
