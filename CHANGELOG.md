@@ -1,3 +1,6 @@
+# v0.1.20
+* Update message generation to support auto payload unpacking
+
 # v0.1.18
 * Defer on remote API calls to prevent internal blocking
 
