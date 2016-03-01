@@ -60,7 +60,7 @@ module Carnivore
             begin
               defer do
                 Timeout.timeout(args.fetch(:receive_timeout, 30).to_i) do
-                  m = @fog.receive_message(q, 'MaxNumberOfMessages' => n).body['Message']
+                  m = @fog.receive_message(q, 'MaxNumberOfMessages' => n, 'WaitTimeSeconds' => 25).body['Message']
                   m.map{|mg| mg.merge('SourceQueue' => q)}
                 end
               end
@@ -167,15 +167,18 @@ module Carnivore
         @fog
       end
 
-      def pre_process(m)
-        if(m['Body'])
+      def pre_process(msg)
+        if(msg['Body'])
           begin
-            m['Body'] = JSON.load(m['Body'])
+            msg['Body'] = JSON.load(msg['Body'])
           rescue JSON::ParserError
             # well, we did our best
           end
         end
-        m
+        Smash.new(
+          :raw => msg,
+          :content => msg['Body']
+        )
       end
 
     end
